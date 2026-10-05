@@ -132,6 +132,13 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 			ctx.setLineDash([]);
 		}
 
+		// 勝利後在整張地圖外框加一道金色光暈。
+		if (getCity().won) {
+			ctx.strokeStyle = "#e8b84f";
+			ctx.lineWidth = 3;
+			ctx.strokeRect(o.x + 1, o.y + 1, W * s - 2, H * s - 2);
+		}
+
 		ctx.restore();
 		requestAnimationFrame(draw);
 	}

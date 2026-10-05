@@ -3,6 +3,7 @@
  */
 
 import { powerStats } from "../core/state.js";
+import { checkGoals } from "../core/events.js";
 
 export function createHud({ getCity }) {
 	const q = (id) => document.querySelector(id);
@@ -25,6 +26,26 @@ export function createHud({ getCity }) {
 		powerEl.className = ps.used > ps.cap ? "bad" : "good";
 		dateEl.textContent = `第 ${city.year} 年・${city.month} 月`;
 		pauseBtn.textContent = city.paused ? "▶ 繼續" : "⏸ 暫停";
+
+		// 勝利目標追蹤器。
+		const meter = q("#goalmeter");
+		const labelEl = q("#goal-label");
+		const fillEl = q("#goal-fill");
+		if (meter && labelEl && fillEl) {
+			const goal = checkGoals(city);
+			if (city.won) {
+				meter.classList.add("won");
+				labelEl.textContent = `🏆 已達成勝利目標！人口 ${city.pop.toLocaleString()}・滿意度 ${city.happy}%`;
+				fillEl.style.width = "100%";
+			} else {
+				meter.classList.remove("won");
+				const popP = Math.min(1, city.pop / goal.popTarget);
+				const happyP = Math.min(1, city.happy / goal.happyTarget);
+				const fill = Math.round(Math.max(popP, happyP) * 100);
+				labelEl.textContent = `目標：人口 ${city.pop.toLocaleString()} / ${goal.popTarget.toLocaleString()}・滿意度 ${city.happy}% / ${goal.happyTarget}%`;
+				fillEl.style.width = fill + "%";
+			}
+		}
 	}
 
 	let timer = 0;

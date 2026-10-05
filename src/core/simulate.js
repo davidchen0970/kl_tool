@@ -7,6 +7,7 @@ import { roadNear, powerStats } from "./state.js";
 import { poweredNetwork, isPowered } from "./power.js";
 import { computeDemand } from "./economy.js";
 import { appendHistory, upkeepFor } from "./report.js";
+import { pickEvent, checkGoals } from "./events.js";
 
 /** 取得該分區的需求倍率。 */
 function mulFor(c, demand) {
@@ -84,8 +85,27 @@ export function simulate(city) {
 		`第 ${city.year} 年・${city.month} 月 ─ 稅收 $${tax.toLocaleString()}・維護 $${upkeep.toLocaleString()}`
 	);
 
-	const msg = city.year === 2 && city.month === 1 ? "城市成立滿一年！" : null;
+	let msg = city.year === 2 && city.month === 1 ? "城市成立滿一年！" : null;
 	if (msg) city.history = appendHistory(city.history, `第 ${city.year} 年・${city.month} 月：${msg}`);
+
+	// 突發事件：本月機率觸發，套用後把詳細內容寫入事件紀錄。
+	const ev = pickEvent(city);
+	if (ev) {
+		const line = ev.apply(city);
+		city.history = appendHistory(city.history, `第 ${city.year} 年・${city.month} 月：${line}`);
+		if (!msg) msg = ev.label;
+	}
+
+	// 勝利目標：首次達成時標記城市並寫入勝利紀錄。
+	const goal = checkGoals(city);
+	if (goal.won && !city.won) {
+		city.won = true;
+		city.history = appendHistory(
+			city.history,
+			`第 ${city.year} 年・${city.month} 月：🏆 達成勝利目標！人口 ${city.pop.toLocaleString()}・滿意度 ${city.happy}%`
+		);
+		msg = "🏆 達成勝利目標！";
+	}
 
 	return msg;
 }
