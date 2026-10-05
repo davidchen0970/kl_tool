@@ -37,17 +37,34 @@ test("simulate 不讓資金變負", () => {
 
 test("simulate 提升有道路且供電的住宅", () => {
 	const city = createCity();
-	// 固定隨機數，讓成長判定必定成立（Math.random() < 0.22）
+	// 固定隨機數，讓成長判定必定成立（Math.random() < 基礎機率 × 需求）
 	const origRandom = Math.random;
 	Math.random = () => 0;
 
 	try {
-		// 電廠提供電力，住宅(1,11) 的上面鋪一條路(1,10)
+		// 電廠到住宅鋪一條相連道路，形成電網；住宅(1,11) 鄰近供電道路(1,10)
 		place(city, "power", 0, 0);
-		place(city, "road", 1, 10);
-		place(city, "res", 1, 11); // 位於 grid[11][1]
+		for (let y = 0; y <= 11; y++) place(city, "road", 1, y);
+		place(city, "res", 1, 12); // 位於 grid[12][1]
 		simulate(city);
-		assert.equal(city.grid[11][1].level, 1); // level 0 -> 1
+		assert.equal(city.grid[12][1].level, 1); // level 0 -> 1
+	} finally {
+		Math.random = origRandom;
+	}
+});
+
+test("simulate 不會提升未接上電網的住宅", () => {
+	const city = createCity();
+	const origRandom = Math.random;
+	Math.random = () => 0;
+
+	try {
+		// 電廠與住宅完全分離：住宅只鄰近一條孤立道路。
+		place(city, "power", 0, 0);
+		place(city, "road", 10, 10);
+		place(city, "res", 10, 11);
+		simulate(city);
+		assert.equal(city.grid[11][10].level, 0); // 未供電 → 不成長
 	} finally {
 		Math.random = origRandom;
 	}

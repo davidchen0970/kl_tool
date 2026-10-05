@@ -3,6 +3,7 @@
  */
 
 import { GRID_W, GRID_H, COLORS, COSTS, GROWABLE } from "../core/constants.js";
+import { poweredNetwork } from "../core/power.js";
 
 export function createRenderer({ canvas, camera, getCity, getTool, getHover, getSelected }) {
 	const ctx = canvas.getContext("2d");
@@ -21,6 +22,10 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 		const grid = getCity().grid;
 		const W = GRID_W;
 		const H = GRID_H;
+
+		// 電網狀態（每幀重算，3**32 grid 很便宜）。
+		const { network, powered } = poweredNetwork(getCity());
+		const glow = 0.12 + 0.1 * (0.5 + 0.5 * Math.sin(performance.now() / 420));
 
 		ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 		ctx.fillStyle = "#173047";
@@ -96,6 +101,15 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 					ctx.lineTo(px + s * 0.57, py + s * 0.42);
 					ctx.lineTo(px + s * 0.48, py + s * 0.72);
 					ctx.stroke();
+				}
+
+				// 電網發光：供電的導體（路 / 電廠）與被供電的分區，微微脈動。
+				const k = x + "," + y;
+				if (network.has(k) || powered.has(k)) {
+					ctx.globalAlpha = glow;
+					ctx.fillStyle = "#fff6b0";
+					ctx.fillRect(px + 1, py + 1, s - 2, s - 2);
+					ctx.globalAlpha = 1;
 				}
 			}
 		}

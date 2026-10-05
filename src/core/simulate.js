@@ -2,9 +2,18 @@
  * 城市模擬 — 每個月的人口、成長、治安、稅收。
  */
 
-import { GROWABLE } from "./constants.js";
+import { GROWABLE, GROWTH_CHANCE, MAX_LEVEL } from "./constants.js";
 import { roadNear, powerStats } from "./state.js";
+import { poweredNetwork, isPowered } from "./power.js";
+import { computeDemand } from "./economy.js";
 import { appendHistory, upkeepFor } from "./report.js";
+
+/** 取得該分區的需求倍率。 */
+function mulFor(c, demand) {
+	if (c.type === "res") return demand.resMul;
+	if (c.type === "com") return demand.comMul;
+	return demand.indMul;
+}
 
 /**
  * 推進一個月。
@@ -17,8 +26,9 @@ export function simulate(city) {
 		city.year++;
 	}
 
-	const ps = powerStats(city);
-	const powered = ps.cap > ps.used;
+	// 先算好整張電網與當月的需求倍率（每個月一致、逐格套用）。
+	const demand = computeDemand(city);
+	const powered = poweredNetwork(city).powered;
 
 	let newPop = 0;
 	let parks = 0;
@@ -34,9 +44,20 @@ export function simulate(city) {
 
 			if (GROWABLE.includes(c.type)) {
 				c.age++;
-				if (roadNear(city, x, y) && powered && c.level < 3 && Math.random() < 0.22) c.level++;
+				const p = isPowered(powered, x, y);
+				// 成長：需要 道路 + 單格供電 + 未滿級，機率 = 基礎 × 該區需求。
+				if (
+					roadNear(city, x, y) &&
+					p &&
+					c.level < MAX_LEVEL &&
+					Math.random() < GROWTH_CHANCE * mulFor(c, demand)
+				) {
+					c.level++;
+				}
+				// 衰退：離道路太遠。
 				if (!roadNear(city, x, y) && c.level > 0 && Math.random() < 0.12) c.level--;
-				if (!powered && c.level > 0 && Math.random() < 0.08) c.level--;
+				// 衰退：供電中斷（單格停電）。
+				if (!p && c.level > 0 && Math.random() < 0.08) c.level--;
 				if (c.type === "res") newPop += c.level * (8 + Math.floor(c.seed * 5));
 			}
 		}
