@@ -18,11 +18,16 @@ import { createLoop } from "./app/loop.js";
 
 const canvas = document.querySelector("#game");
 
-const city = loadCity() ?? createCity();
+const loaded = loadCity();
+const freshCity = loaded === null;
+const city = loaded ?? createCity();
 const hover = { x: -1, y: -1 };
 const selected = { x: -1, y: -1 };
 const camera = createCamera(canvas);
 const hud = createHud({ getCity: () => city });
+
+// 開局提示：僅在「全新城市」（沒有存檔）時顯示，不讓有存檔的玩家被重複打擾。
+if (freshCity) hud.toast("從中央的起始道路開始鋪設！");
 
 function setSelected(x, y) {
 	selected.x = x;
@@ -44,6 +49,7 @@ function onNew() {
 	clearSave();
 	Object.assign(city, createCity());
 	setSelected(-1, -1);
+	hud.toast("從中央的起始道路開始鋪設！");
 	hud.update();
 	panel.render();
 }

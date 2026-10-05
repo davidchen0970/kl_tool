@@ -5,6 +5,7 @@
  */
 
 import { GRID_W, GRID_H, COLORS, COSTS, GROWABLE } from "../core/constants.js";
+import { START_SEGMENT_X, START_SEGMENT_Y, START_LENGTH } from "../core/state.js";
 import { poweredNetwork } from "../core/power.js";
 import { nightness } from "./daynight.js";
 import { easeOutBack, easeOutCubic, hash01, osc, tween01 } from "./anim.js";
@@ -253,6 +254,29 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 			ctx.fillStyle = "rgba(10,18,38," + (night * 0.58).toFixed(3) + ")";
 			ctx.fillRect(o.x, o.y, W * s, H * s);
 		}
+
+		// 起始道路：以柔和脈動的虛線輪廓 + 脈動箭頭，提示玩家從這裡開始鋪設。
+		const pulse = 0.5 + 0.5 * osc(now, 1300);
+		const startPx = o.x + START_SEGMENT_X * s;
+		const startPy = o.y + START_SEGMENT_Y * s;
+		ctx.strokeStyle = "rgba(255,214,120," + (0.4 + 0.45 * pulse).toFixed(3) + ")";
+		ctx.lineWidth = Math.max(1.5, s * 0.045);
+		ctx.setLineDash([s * 0.35, s * 0.3]);
+		for (let i = 0; i < START_LENGTH; i++) {
+			ctx.strokeRect(startPx + i * s + 1, startPy + 1, s - 2, s - 2);
+		}
+		ctx.setLineDash([]);
+		// 起始道路左端上方的指下箭頭（隨脈動輕彈）。
+		const bob = pulse * s * 0.12;
+		const ax = startPx + s * 0.5;
+		const ay = startPy - s * 0.42 - bob;
+		ctx.fillStyle = "rgba(255,224,140," + (0.5 + 0.5 * pulse).toFixed(3) + ")";
+		ctx.beginPath();
+		ctx.moveTo(ax - s * 0.2, ay);
+		ctx.lineTo(ax + s * 0.2, ay);
+		ctx.lineTo(ax, ay + s * 0.28);
+		ctx.closePath();
+		ctx.fill();
 
 		// 滑鼠高亮框
 		const hover = getHover();
