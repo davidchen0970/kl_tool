@@ -296,6 +296,14 @@ footer {
 .danger:hover {
 	background: #49202a;
 }
+#sound.muted {
+	border-color: #5a5f6b;
+	background: #1d2534;
+	color: #8ea3bd;
+}
+#sound.muted:hover {
+	background: #28303f;
+}
 
 @media (max-width: 690px) {
 	header {
