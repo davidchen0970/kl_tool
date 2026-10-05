@@ -1,0 +1,199 @@
+/* Mini City Builder — 版面與樣式 */
+
+:root {
+	--bg: #0b1320;
+	--panel: #111c2d;
+	--line: #29405f;
+	--text: #e8f1ff;
+	--muted: #91a7c4;
+	--accent: #58c7ff;
+}
+
+* {
+	box-sizing: border-box;
+}
+html,
+body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+	background: var(--bg);
+	font-family: system-ui, -apple-system, "Segoe UI", "Microsoft JhengHei", sans-serif;
+	color: var(--text);
+}
+
+#app {
+	height: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	background: radial-gradient(circle at 50% 0, #19324c, #08111e 65%);
+}
+
+/* --- 頁首 --- */
+header {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	padding: 10px 14px;
+	background: #0b1524e8;
+	border-bottom: 1px solid #263b57;
+	box-shadow: 0 5px 18px #0007;
+	z-index: 2;
+}
+.brand {
+	font-weight: 900;
+	letter-spacing: 0.5px;
+	white-space: nowrap;
+}
+.brand b {
+	color: #62d5ff;
+}
+.stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-left: auto;
+}
+.stat {
+	background: #16243a;
+	border: 1px solid #2b4567;
+	border-radius: 9px;
+	padding: 6px 10px;
+	font-size: 13px;
+	white-space: nowrap;
+}
+.stat strong {
+	color: #fff;
+}
+.good {
+	color: #68df8c;
+}
+.bad {
+	color: #ff7b7b;
+}
+
+/* --- 主畫布 --- */
+main {
+	position: relative;
+	min-height: 0;
+}
+canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+	cursor: crosshair;
+	image-rendering: pixelated;
+}
+
+#tip {
+	position: absolute;
+	left: 14px;
+	top: 14px;
+	max-width: 310px;
+	background: #08121ee6;
+	border: 1px solid #345270;
+	border-radius: 10px;
+	padding: 10px 12px;
+	font-size: 13px;
+	line-height: 1.55;
+	pointer-events: none;
+	box-shadow: 0 8px 25px #0008;
+}
+.key {
+	display: inline-block;
+	padding: 0 5px;
+	border: 1px solid #546a84;
+	border-bottom-width: 2px;
+	border-radius: 4px;
+	background: #1b2a40;
+	color: #fff;
+	font-size: 11px;
+}
+
+#toast {
+	position: absolute;
+	left: 50%;
+	top: 18px;
+	transform: translateX(-50%) translateY(-90px);
+	background: #0e1b2bee;
+	border: 1px solid #4e749a;
+	border-radius: 9px;
+	padding: 9px 16px;
+	transition: 0.25s;
+	pointer-events: none;
+}
+#toast.show {
+	transform: translateX(-50%) translateY(0) !important;
+}
+
+/* --- 頁尾工具列 --- */
+footer {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 12px;
+	background: #0b1524;
+	border-top: 1px solid #263b57;
+	overflow-x: auto;
+}
+.tool {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	border: 1px solid #314a68;
+	background: #16243a;
+	color: #dbe8f8;
+	border-radius: 9px;
+	padding: 8px 11px;
+	cursor: pointer;
+	white-space: nowrap;
+	font-weight: 700;
+}
+.tool:hover {
+	background: #20344f;
+}
+.tool.active {
+	outline: 2px solid var(--accent);
+	background: #123650;
+}
+.sw {
+	width: 13px;
+	height: 13px;
+	border-radius: 3px;
+}
+.spacer {
+	flex: 1;
+}
+.speed {
+	padding: 8px 10px;
+}
+.danger {
+	border-color: #663941;
+}
+.danger:hover {
+	background: #49202a;
+}
+
+@media (max-width: 690px) {
+	header {
+		align-items: flex-start;
+	}
+	.brand {
+		font-size: 14px;
+	}
+	.stats {
+		gap: 4px;
+	}
+	.stat {
+		font-size: 11px;
+		padding: 5px 7px;
+	}
+	#tip {
+		font-size: 12px;
+		max-width: 255px;
+	}
+	.tool {
+		padding: 7px 9px;
+		font-size: 12px;
+	}
+}

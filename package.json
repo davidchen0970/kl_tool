@@ -1,0 +1,10 @@
+{
+  "name": "mini-city-builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "serve": "npx --yes http-server . -p 8080 -c-1"
+  }
+}
