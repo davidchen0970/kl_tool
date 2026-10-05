@@ -4,7 +4,7 @@
 
 import { GRID_W, GRID_H, COLORS, COSTS, GROWABLE } from "../core/constants.js";
 
-export function createRenderer({ canvas, camera, getCity, getTool, getHover }) {
+export function createRenderer({ canvas, camera, getCity, getTool, getHover, getSelected }) {
 	const ctx = canvas.getContext("2d");
 
 	function resize() {
@@ -106,6 +106,16 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover }) {
 			ctx.strokeStyle = getCity().money >= COSTS[getTool()] ? "#fff" : "#ff6969";
 			ctx.lineWidth = 2;
 			ctx.strokeRect(o.x + hover.x * s + 1, o.y + hover.y * s + 1, s - 2, s - 2);
+		}
+
+		// 選取方塊（查詢工具）— 用虛線高亮標示
+		const sel = getSelected && getSelected();
+		if (sel && sel.x >= 0 && sel.y >= 0 && sel.x < W && sel.y < H) {
+			ctx.strokeStyle = "#58c7ff";
+			ctx.lineWidth = 2;
+			ctx.setLineDash([4, 3]);
+			ctx.strokeRect(o.x + sel.x * s + 1, o.y + sel.y * s + 1, s - 2, s - 2);
+			ctx.setLineDash([]);
 		}
 
 		ctx.restore();

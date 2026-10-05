@@ -26,9 +26,34 @@
 					<b>市長您好！</b><br />
 					先鋪道路，住宅/商業/工業必須緊鄰道路才會發展。<br />
 					<span class="key">左鍵</span> 建造　<span class="key">右鍵</span> 拆除　<span class="key">Space</span> 暫停<br />
-					<span class="key">1–6</span> 切換工具　滾輪縮放
+					<span class="key">1–7</span> 切換工具　滾輪縮放　<span class="key">7 查詢</span> 點選方塊看資訊
 				</div>
 				<div id="toast"></div>
+
+				<aside id="info">
+					<section class="info-sec">
+						<h4>📅 財政月報</h4>
+						<div class="fin-date" id="fin-date">第 1 年・1 月</div>
+						<div class="fin-row"><span>稅收</span><b id="fin-income">$0</b></div>
+						<div class="fin-row"><span>維護</span><b id="fin-upkeep">-$0</b></div>
+						<div class="fin-row"><span>淨額</span><b id="fin-net">$0</b></div>
+					</section>
+					<section class="info-sec">
+						<h4>🧱 選取方塊</h4>
+						<div class="tile-none" id="tile-none">尚未選取（切到「查詢」工具後點選格子）</div>
+						<div class="tile-detail" id="tile-detail" hidden>
+							<div class="tile-name"><span class="sw" id="tile-swatch"></span><b id="tile-title"></b></div>
+							<div class="fin-row"><span>等級</span><b id="tile-level">0</b></div>
+							<div class="fin-row"><span>年齡</span><b id="tile-age">0 月</b></div>
+							<div class="fin-row"><span>居民</span><b id="tile-occ">—</b></div>
+							<div class="tile-desc" id="tile-desc"></div>
+						</div>
+					</section>
+					<section class="info-sec">
+						<h4>📜 事件紀錄</h4>
+						<ol id="history-list" class="history"><li class="muted">尚無紀錄</li></ol>
+					</section>
+				</aside>
 			</main>
 
 			<footer>
@@ -38,7 +63,9 @@
 				<button class="tool" data-tool="ind"><span class="sw" style="background:#e4bd45"></span>4 工業 $140</button>
 				<button class="tool" data-tool="park"><span class="sw" style="background:#16a66c"></span>5 公園 $350</button>
 				<button class="tool" data-tool="power"><span class="sw" style="background:#b866e8"></span>6 電廠 $1,500</button>
+				<button class="tool" data-tool="info"><span class="sw" style="background:#58c7ff"></span>7 查詢 🔍</button>
 				<div class="spacer"></div>
+				<button id="info-toggle" class="tool">📊 資訊</button>
 				<button id="pause" class="tool speed">⏸ 暫停</button>
 				<button id="new" class="tool danger">↻ 新城市</button>
 			</footer>
