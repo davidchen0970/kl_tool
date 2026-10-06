@@ -50,3 +50,10 @@ export const DEMAND_MAX = 1.6;
 
 /** 需求倍率在「沒有相對應供需」時的低落基準（低於 DEMAND_MIN）。 */
 export const DEMAND_STARVING = 0.45;
+
+/** 每個月觸發突發事件的機率。 */
+export const EVENT_CHANCE = 0.06;
+
+/** 勝利目標 — 需要同時達到的人口數與滿意度。 */
+export const GOAL_POP = 4000;
+export const GOAL_HAPPY = 60;

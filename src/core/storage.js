@@ -56,6 +56,7 @@ function normalize(raw) {
 	if (Number.isFinite(raw.month)) city.month = raw.month;
 	if (Number.isFinite(raw.year)) city.year = raw.year;
 	city.paused = !!raw.paused;
+	city.won = !!raw.won;
 
 	// 承載財政快照（lastFinance）— 只取數值欄位並做型別驗證。
 	if (raw.lastFinance && typeof raw.lastFinance === "object") {
