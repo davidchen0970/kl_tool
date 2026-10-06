@@ -2,7 +2,7 @@
  * 工具列 — 切換建造工具、暫停、重新開始，並負責 active 樣式。
  */
 
-const TOOL_ORDER = ["road", "res", "com", "ind", "park", "power"];
+const TOOL_ORDER = ["road", "res", "com", "ind", "park", "power", "info"];
 
 export function setupToolbar({ onTogglePause, onNew }) {
 	const buttons = [...document.querySelectorAll(".tool[data-tool]")];

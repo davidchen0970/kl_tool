@@ -7,6 +7,7 @@
 
 import { GRID_W, GRID_H } from "./constants.js";
 import { createCity } from "./state.js";
+import { HISTORY_MAX } from "./report.js";
 
 /** localStorage 的存檔金鑰。 */
 export const SAVE_KEY = "mini_city_builder:v1";
@@ -55,6 +56,20 @@ function normalize(raw) {
 	if (Number.isFinite(raw.month)) city.month = raw.month;
 	if (Number.isFinite(raw.year)) city.year = raw.year;
 	city.paused = !!raw.paused;
+
+	// 承載財政快照（lastFinance）— 只取數值欄位並做型別驗證。
+	if (raw.lastFinance && typeof raw.lastFinance === "object") {
+		const lf = {};
+		for (const k of ["year", "month", "income", "upkeep", "net"]) {
+			if (Number.isFinite(raw.lastFinance[k])) lf[k] = raw.lastFinance[k];
+		}
+		if (Object.keys(lf).length > 0) city.lastFinance = lf;
+	}
+
+	// 承載事件紀錄（history）— 只保留字串並限制筆數。
+	if (Array.isArray(raw.history)) {
+		city.history = raw.history.filter((e) => typeof e === "string").slice(0, HISTORY_MAX);
+	}
 
 	return city;
 }

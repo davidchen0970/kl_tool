@@ -28,6 +28,8 @@ export function createCity() {
 		month: 1,
 		year: 1,
 		paused: false,
+		history: [],
+		lastFinance: null,
 	};
 }
 

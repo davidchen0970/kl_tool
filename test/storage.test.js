@@ -80,3 +80,33 @@ test("clearSave 移除存檔", () => {
 	clearSave(storage);
 	assert.equal(loadCity(storage), null);
 });
+
+test("lastFinance 與 history 存檔後可還原", () => {
+	const storage = memoryStorage();
+	const city = createCity();
+	city.month = 2;
+	city.year = 1;
+	city.lastFinance = { year: 1, month: 2, income: 123, upkeep: 40, net: 83 };
+	city.history = ["第 1 年・2 月 ─ 稅收 $123"];
+	saveCity(city, storage);
+	const loaded = loadCity(storage);
+	assert.notEqual(loaded, null);
+	assert.deepEqual(loaded.lastFinance, { year: 1, month: 2, income: 123, upkeep: 40, net: 83 });
+	assert.deepEqual(loaded.history, ["第 1 年・2 月 ─ 稅收 $123"]);
+});
+
+test("history 只保留字串並限制筆數", () => {
+	const storage = memoryStorage();
+	const raw = {
+		grid: Array.from({ length: 24 }, () => Array(32).fill({})),
+		money: 1,
+		history: [1, "ok", { a: 1 }, "keep"].concat(Array.from({ length: 60 }, (_, i) => "e" + i)),
+		lastFinance: { income: "bad", upkeep: 5, foo: 1 },
+	};
+	storage.setItem(SAVE_KEY, JSON.stringify(raw));
+	const loaded = loadCity(storage);
+	assert.deepEqual(loaded.history, ["ok", "keep"].concat(Array.from({ length: 60 }, (_, i) => "e" + i)).slice(0, 30));
+	// 非數值欄位被略過
+	assert.equal(loaded.lastFinance.income, undefined);
+	assert.equal(loaded.lastFinance.upkeep, 5);
+});

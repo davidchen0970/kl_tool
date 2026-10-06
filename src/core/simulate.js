@@ -4,6 +4,7 @@
 
 import { GROWABLE } from "./constants.js";
 import { roadNear, powerStats } from "./state.js";
+import { appendHistory, upkeepFor } from "./report.js";
 
 /**
  * 推進一個月。
@@ -55,5 +56,15 @@ export function simulate(city) {
 	const tax = Math.floor(city.pop * 0.7 + commercial * 6 + industry * 8);
 	city.money += tax;
 
-	return city.year === 2 && city.month === 1 ? "城市成立滿一年！" : null;
+	const upkeep = upkeepFor(city);
+	city.lastFinance = { year: city.year, month: city.month, income: tax, upkeep, net: tax - upkeep };
+	city.history = appendHistory(
+		city.history,
+		`第 ${city.year} 年・${city.month} 月 ─ 稅收 $${tax.toLocaleString()}・維護 $${upkeep.toLocaleString()}`
+	);
+
+	const msg = city.year === 2 && city.month === 1 ? "城市成立滿一年！" : null;
+	if (msg) city.history = appendHistory(city.history, `第 ${city.year} 年・${city.month} 月：${msg}`);
+
+	return msg;
 }
