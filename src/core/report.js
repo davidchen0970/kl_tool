@@ -5,6 +5,8 @@
 
 import { GROWABLE, COSTS, COLORS } from "./constants.js";
 import { isInBounds } from "./state.js";
+import { computeDemand } from "./economy.js";
+import { poweredNetwork } from "./power.js";
 
 /** 每個月每座發電廠的維護成本（估算）。 */
 export const POWER_UPKEEP = 200;
@@ -58,12 +60,23 @@ export function buildReport(city) {
 	const income =
 		city.lastFinance && Number.isFinite(city.lastFinance.income) ? city.lastFinance.income : 0;
 	const upkeep = upkeepFor(city);
+	const demand = computeDemand(city);
+	const { network, powered } = poweredNetwork(city);
 	return {
 		income,
 		upkeep,
 		net: income - upkeep,
 		occupants,
 		counts,
+		jobs: demand.jobs,
+		residents: demand.residents,
+		demand: {
+			res: demand.resMul,
+			com: demand.comMul,
+			ind: demand.indMul,
+		},
+		poweredCoverage: powered.size,
+		poweredRoads: network.size,
 	};
 }
 
