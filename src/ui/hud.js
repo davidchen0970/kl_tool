@@ -13,6 +13,7 @@ export function createHud({ getCity }) {
 	const dateEl = q("#date");
 	const pauseBtn = q("#pause");
 	const toastEl = q("#toast");
+	const saveEl = q("#save");
 
 	function update() {
 		const city = getCity();
@@ -34,5 +35,14 @@ export function createHud({ getCity }) {
 		timer = setTimeout(() => toastEl.classList.remove("show"), 1600);
 	}
 
-	return { update, toast };
+	let savedTimer = 0;
+	function saved() {
+		if (!saveEl) return;
+		saveEl.textContent = "💾 已儲存 " + new Date().toLocaleTimeString();
+		saveEl.classList.add("saved");
+		clearTimeout(savedTimer);
+		savedTimer = setTimeout(() => saveEl.classList.remove("saved"), 1200);
+	}
+
+	return { update, toast, saved };
 }

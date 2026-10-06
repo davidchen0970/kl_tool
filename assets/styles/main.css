@@ -65,6 +65,16 @@ header {
 .stat strong {
 	color: #fff;
 }
+#save {
+	color: var(--muted);
+	font-size: 11px;
+	transition: filter 0.2s, background-color 0.2s, border-color 0.2s;
+}
+#save.saved {
+	color: #68df8c;
+	background-color: #1b3a2a;
+	border-color: #3f7d55;
+}
 .good {
 	color: #68df8c;
 }
