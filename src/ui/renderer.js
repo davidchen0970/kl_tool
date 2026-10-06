@@ -4,6 +4,7 @@
 
 import { GRID_W, GRID_H, COLORS, COSTS, GROWABLE } from "../core/constants.js";
 import { poweredNetwork } from "../core/power.js";
+import { nightness } from "./daynight.js";
 
 export function createRenderer({ canvas, camera, getCity, getTool, getHover, getSelected }) {
 	const ctx = canvas.getContext("2d");
@@ -26,6 +27,9 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 		// 電網狀態（每幀重算，3**32 grid 很便宜）。
 		const { network, powered } = poweredNetwork(getCity());
 		const glow = 0.12 + 0.1 * (0.5 + 0.5 * Math.sin(performance.now() / 420));
+
+		// 晝夜：以真實時間自算夜晚程度（0..1），純 canvas、零狀態變更。
+		const night = nightness(performance.now());
 
 		ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 		ctx.fillStyle = "#173047";
@@ -64,19 +68,26 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 					ctx.fillRect(px + s * 0.48, py + s * 0.72, s * 0.04, s * 0.22);
 				}
 
-				// 成長中的建築
+				// 成長中的建築（夜間窗戶會點亮成暖黃）
 				if (GROWABLE.includes(c.type) && c.level > 0) {
 					const margin = s * (0.27 - 0.04 * c.level);
 					const h = s * (0.3 + 0.13 * c.level);
-					ctx.fillStyle = c.type === "res" ? "#e8f0e0" : c.type === "com" ? "#cce9ff" : "#5d5143";
+					// 天黑時建築本體略為轉暗。
+					const bodyA = 1 - night * 0.22;
+					const bodyBase = c.type === "res" ? "#e8f0e0" : c.type === "com" ? "#cce9ff" : "#5d5143";
+					ctx.globalAlpha = bodyA;
+					ctx.fillStyle = bodyBase;
 					ctx.strokeStyle = "#26384c";
 					ctx.lineWidth = 1;
 					ctx.fillRect(px + margin, py + s - margin - h, s - 2 * margin, h);
 					ctx.strokeRect(px + margin, py + s - margin - h, s - 2 * margin, h);
-					ctx.fillStyle = c.type === "ind" ? "#f5c95e" : "#ffe68a";
+					// 窗戶：白天淡，夜晚轉暖黃並漸亮。
+					ctx.globalAlpha = Math.max(0.25, night * 1.15);
+					ctx.fillStyle = night > 0.15 ? "#ffd272" : c.type === "ind" ? "#f5c95e" : "#ffe68a";
 					for (let k = 0; k < c.level; k++) {
 						ctx.fillRect(px + margin + 3 + k * 5, py + s - margin - h + 4, 2, 3);
 					}
+					ctx.globalAlpha = 1;
 				}
 
 				// 公園
@@ -112,6 +123,12 @@ export function createRenderer({ canvas, camera, getCity, getTool, getHover, get
 					ctx.globalAlpha = 1;
 				}
 			}
+		}
+
+		// 夜晚：於整張地圖覆上一層深藍夜幕，夜幕愈深色愈重。
+		if (night > 0.02) {
+			ctx.fillStyle = "rgba(10,18,38," + (night * 0.58).toFixed(3) + ")";
+			ctx.fillRect(o.x, o.y, W * s, H * s);
 		}
 
 		// 滑鼠高亮框

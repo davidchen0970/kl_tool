@@ -11,6 +11,7 @@ import { createCamera } from "./ui/camera.js";
 import { createRenderer } from "./ui/renderer.js";
 import { createHud } from "./ui/hud.js";
 import { createPanel } from "./ui/panel.js";
+import { createSound, loadMuted } from "./ui/sound.js";
 import { setupPointerInput, setupKeyboard } from "./ui/input.js";
 import { setupToolbar } from "./app/toolbar.js";
 import { createLoop } from "./app/loop.js";
@@ -49,6 +50,25 @@ function onNew() {
 
 const toolbar = setupToolbar({ onTogglePause: togglePause, onNew });
 
+// 音效：靜音偏好自 localStorage 讀取；於首次使用者手勢解鎖 AudioContext。
+const soundBtn = document.querySelector("#sound");
+const sound = createSound(() => loadMuted());
+function refreshSoundBtn() {
+	if (!soundBtn) return;
+	soundBtn.textContent = sound.getMuted() ? "🔇 靜音" : "🔊 音效";
+	soundBtn.classList.toggle("muted", sound.getMuted());
+}
+if (soundBtn) {
+	soundBtn.onclick = () => {
+		sound.toggle();
+		refreshSoundBtn();
+	};
+}
+// 任一使用者手勢即解鎖音效（autoplay policy）：pointerdown + keydown。
+addEventListener("pointerdown", () => sound.unlock(), { once: true });
+addEventListener("keydown", () => sound.unlock(), { once: true });
+refreshSoundBtn();
+
 const renderer = createRenderer({
 	canvas,
 	camera,
@@ -70,6 +90,7 @@ function onPlace(x, y) {
 	const result = place(city, toolbar.getTool(), x, y);
 	if (result === "no-money") hud.toast("資金不足！");
 	if (result === "ok") {
+		sound.place();
 		hud.update();
 		panel.render();
 		save();
@@ -78,6 +99,7 @@ function onPlace(x, y) {
 
 function onBulldoze(x, y) {
 	if (bulldoze(city, x, y) !== 0) {
+		sound.bulldoze();
 		hud.update();
 		panel.render();
 		save();
@@ -85,8 +107,11 @@ function onBulldoze(x, y) {
 }
 
 function onTick() {
+	const wasWon = city.won;
 	const msg = simulate(city);
 	if (msg) hud.toast(msg);
+	if (!wasWon && city.won) sound.victory();
+	else if (msg) sound.event();
 	hud.update();
 	panel.render();
 	save();

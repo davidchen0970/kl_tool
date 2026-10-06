@@ -4,6 +4,7 @@
 
 import { powerStats } from "../core/state.js";
 import { checkGoals } from "../core/events.js";
+import { dayNightIcon } from "./daynight.js";
 
 export function createHud({ getCity }) {
 	const q = (id) => document.querySelector(id);
@@ -12,6 +13,7 @@ export function createHud({ getCity }) {
 	const happyEl = q("#happy");
 	const powerEl = q("#power");
 	const dateEl = q("#date");
+	const nightEl = q("#night");
 	const pauseBtn = q("#pause");
 	const toastEl = q("#toast");
 	const saveEl = q("#save");
@@ -25,6 +27,7 @@ export function createHud({ getCity }) {
 		powerEl.textContent = ps.used + " / " + ps.cap;
 		powerEl.className = ps.used > ps.cap ? "bad" : "good";
 		dateEl.textContent = `第 ${city.year} 年・${city.month} 月`;
+		if (nightEl) nightEl.textContent = dayNightIcon(performance.now());
 		pauseBtn.textContent = city.paused ? "▶ 繼續" : "⏸ 暫停";
 
 		// 勝利目標追蹤器。
