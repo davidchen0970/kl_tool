@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+		<title>Mini City Builder</title>
+		<link rel="stylesheet" href="assets/styles/main.css" />
+	</head>
+	<body>
+		<div id="app">
+			<header>
+				<div class="brand">🏙️ <b>Mini City</b> BUILDER</div>
+				<div class="stats">
+					<div class="stat">💰 <strong id="money">$25,000</strong></div>
+					<div class="stat">👥 <strong id="pop">0</strong></div>
+					<div class="stat">🙂 <strong id="happy">70%</strong></div>
+					<div class="stat">⚡ <strong id="power">0 / 0</strong></div>
+					<div class="stat">📅 <strong id="date">第 1 年・1 月</strong></div>
+				</div>
+			</header>
+
+			<main>
+				<canvas id="game"></canvas>
+				<div id="tip">
+					<b>市長您好！</b><br />
+					先鋪道路，住宅/商業/工業必須緊鄰道路才會發展。<br />
+					<span class="key">左鍵</span> 建造　<span class="key">右鍵</span> 拆除　<span class="key">Space</span> 暫停<br />
+					<span class="key">1–6</span> 切換工具　滾輪縮放
+				</div>
+				<div id="toast"></div>
+			</main>
+
+			<footer>
+				<button class="tool active" data-tool="road"><span class="sw" style="background:#727b86"></span>1 道路 $40</button>
+				<button class="tool" data-tool="res"><span class="sw" style="background:#45c86d"></span>2 住宅 $90</button>
+				<button class="tool" data-tool="com"><span class="sw" style="background:#4b9cff"></span>3 商業 $120</button>
+				<button class="tool" data-tool="ind"><span class="sw" style="background:#e4bd45"></span>4 工業 $140</button>
+				<button class="tool" data-tool="park"><span class="sw" style="background:#16a66c"></span>5 公園 $350</button>
+				<button class="tool" data-tool="power"><span class="sw" style="background:#b866e8"></span>6 電廠 $1,500</button>
+				<div class="spacer"></div>
+				<button id="pause" class="tool speed">⏸ 暫停</button>
+				<button id="new" class="tool danger">↻ 新城市</button>
+			</footer>
+		</div>
+		<script type="module" src="./src/main.js"></script>
+	</body>
+</html>
