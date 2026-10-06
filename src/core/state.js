@@ -18,9 +18,39 @@ export function makeGrid() {
 	return grid;
 }
 
-/** 建立一座全新城市。 */
+/** 起始道路的長度（水平方向的道路格數）。 */
+export const START_LENGTH = 5;
+/** 起始道路所在的列（地圖垂直中央）。 */
+export const START_SEGMENT_Y = Math.floor(GRID_H / 2);
+/** 起始道路的起始行（使其大致水平置中）。 */
+export const START_SEGMENT_X = Math.floor((GRID_W - START_LENGTH) / 2);
+
+/** 座標是否落在「起始道路」上（供 renderer / HUD 高亮起始點）。 */
+export function isStartSegment(x, y) {
+	return y === START_SEGMENT_Y && x >= START_SEGMENT_X && x < START_SEGMENT_X + START_LENGTH;
+}
+
+/** 在座標 (x, y) 放下一格 level 1 的起始道路。 */
+function putStartRoad(city, x, y) {
+	city.grid[y][x] = { type: "road", level: 1, age: 0, seed: Math.random() };
+}
+
+/**
+ * 在全新城市的地圖中央鋪一段起始道路，讓玩家一開局就有錨點。
+ * 只應在「創建新城市」時呼叫；讀取存檔時不會呼叫（由 normalize 以 raw grid 重建）。
+ * @param {object} city
+ * @returns {object} 同一份 city（方便串接）。
+ */
+export function seedStartingRoad(city) {
+	for (let i = 0; i < START_LENGTH; i++) {
+		putStartRoad(city, START_SEGMENT_X + i, START_SEGMENT_Y);
+	}
+	return city;
+}
+
+/** 建立一座全新城市（含地圖中央的起始道路）。 */
 export function createCity() {
-	return {
+	const city = {
 		grid: makeGrid(),
 		money: 25000,
 		pop: 0,
@@ -31,6 +61,8 @@ export function createCity() {
 		history: [],
 		lastFinance: null,
 	};
+	seedStartingRoad(city);
+	return city;
 }
 
 /** 座標是否在地圖內。 */
